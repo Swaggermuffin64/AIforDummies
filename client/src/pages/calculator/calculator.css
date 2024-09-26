@@ -1,0 +1,20 @@
+/* CalculatorComponent.css */
+body {
+    font-family: Arial, sans-serif;
+  }
+  
+  .calculator-container {
+    width: 99vw;
+    height: 99vh;
+  }
+  
+  .axis, .axis path {
+    fill: none;
+    stroke: #ACB849;
+  }
+  
+  text {
+    stroke: none;
+    fill: #666666;
+  }
+  
