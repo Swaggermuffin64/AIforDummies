@@ -49,8 +49,10 @@ const CalculatorComponent = () => {
       };
 
     //========Calculate click coords and call updateTable==========//
-    
-    const handleButtonClick = (evt) => {
+    //FIXME: points are placed slightly off cursor
+    //FIXME: buttons are placed even when dragging
+
+    const handleClick = (evt) => {
       if (!calculatorInstance) return; // Check if calculator is loaded
   
       const rect = calculatorRef.current.getBoundingClientRect();
@@ -79,10 +81,31 @@ const CalculatorComponent = () => {
             ]
         });
     };
-  
+    //=========Sends post request for Linear Regression step=========
+    const handleLRPostSend = () => {
+        console.log('Click Data:', clickData);
+        console.log('JSON String:', JSON.stringify(clickData));
+        fetch('http://localhost:3001/post-LR-Iter', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(clickData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response from server:', data);
+        })
+        .catch(error => {
+            console.error('Error sending click data:', error);
+        });
+    };
+
     return (
-      <div id="calculator" className="calculator-container" onClick={handleButtonClick}>
+      <div id="calculator" className="calculator-container" onClick={handleClick}>
+        <button onClick={handleLRPostSend}>Linear Regression Iteration</button>
       </div>
+      
     );
 };
 
