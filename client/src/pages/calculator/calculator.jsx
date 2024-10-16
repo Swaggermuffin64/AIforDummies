@@ -64,23 +64,36 @@ const CalculatorComponent = () => {
         return;
       };
   
-      const updatedXValues = [...clickData.xValues, mathCoordinates.x.toPrecision(2)];
-      const updatedYValues = [...clickData.yValues, mathCoordinates.y.toPrecision(2)];
+      const updatedXValues = [...clickData.xValues, Number(mathCoordinates.x.toFixed(2))];
+      const updatedYValues = [...clickData.yValues, Number(mathCoordinates.y.toFixed(2))];
   
       setClickData({ xValues: updatedXValues, yValues: updatedYValues });
-      updateTable(updatedXValues, updatedYValues);
+      updateClickDataTable(updatedXValues, updatedYValues);
     };
+
     //=========Update table with clickData=========//
-    const updateTable = (xValues, yValues) => {
+    const updateClickDataTable = (xValues, yValues) => {
         calculatorInstance.setExpression({
-            id: 'table1',
+            id: 'click_data_table',
             type: 'table',
             columns: [
-              {latex: 'x', values: xValues},
-              {latex: 'y', values: yValues}
+              {latex: 'x', values: xValues.map(String)},
+              {latex: 'y', values: yValues.map(String)}
             ]
         });
     };
+
+    const updateTableLine = (parameters) => {
+        console.log("yerd");
+        console.log(parameters);
+        const b_0 = parameters.b_0;
+        console.log("yerd2");
+        const b_1 = parameters.b_1;     //y=b0+b1x
+        const line = `y = ${b_0} + ${b_1}x`;
+        calculatorInstance.setExpression({id: 'Linear_Regression', latex:line});
+        //calculator.setExpression({ id: 'a-slider', latex: 'a=1' });
+    }
+
     //=========Sends post request for Linear Regression step=========
     const handleLRPostSend = () => {
         console.log('Click Data:', clickData);
@@ -94,7 +107,7 @@ const CalculatorComponent = () => {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Response from server:', data);
+            updateTableLine(data);
         })
         .catch(error => {
             console.error('Error sending click data:', error);
