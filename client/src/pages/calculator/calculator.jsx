@@ -1,10 +1,10 @@
 // CalculatorComponent.jsx
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './calculator.css';
-//========= =========//
 const CalculatorComponent = () => {
     const [calculatorInstance, setCalculatorInstance] = useState(null);
     const [clickData, setClickData] = useState({ xValues: [], yValues: [] });
+    const [regressionLine,setRegressionLine] = useState(null);               //no line yet, get first line from server
     const calculatorRef = useRef(null);
 
     //=========Load the calculator API=========//
@@ -46,7 +46,7 @@ const CalculatorComponent = () => {
           point.y <= rect.top &&
           point.y >= rect.bottom
         );
-      };
+    };
 
     //========Calculate click coords and call updateTable==========//
     //FIXME: points are placed slightly off cursor
@@ -82,32 +82,55 @@ const CalculatorComponent = () => {
             ]
         });
     };
+    //=========Update table and regressionLine with new regressionLine=========//
+    const updateLinearRegressionParams = useCallback((parameters) => {
+        console.log("Updating Linear Regression");
+        console.log("Received parameters:", parameters);
 
-    const updateTableLine = (parameters) => {
-        console.log("yerd");
-        console.log(parameters);
-        const b_0 = parameters.b_0;
-        console.log("yerd2");
-        const b_1 = parameters.b_1;     //y=b0+b1x
-        const line = `y = ${b_0} + ${b_1}x`;
-        calculatorInstance.setExpression({id: 'Linear_Regression', latex:line});
-        //calculator.setExpression({ id: 'a-slider', latex: 'a=1' });
-    }
+        if (parameters.regressionLine && parameters.regressionLine.length === 2) {
+            const [b_0, b_1] = parameters.regressionLine;
+            console.log("b_0, b_1 to set regressionLine:", b_0, b_1);
+
+            setRegressionLine([b_0, b_1]);
+            if (calculatorInstance) {
+                const line = `y = ${b_0} + ${b_1}x`;
+                calculatorInstance.setExpression({id: 'Linear_Regression', latex: line});
+                console.log("Updated calculator with line:", line);
+            } 
+            else {
+                console.warn("Calculator instance not available");
+            }
+        } 
+        else {
+            console.error("Invalid regression line data received");
+        }
+    }, [calculatorInstance]);
+
+    useEffect(() => {
+        console.log("Regression line updated:", regressionLine);
+    }, [regressionLine]);
+
 
     //=========Sends post request for Linear Regression step=========
     const handleLRPostSend = () => {
-        console.log('Click Data:', clickData);
-        console.log('JSON String:', JSON.stringify(clickData));
+        const dataToSend = {
+          clickData : clickData,
+          regressionLine : regressionLine
+        };
+
+        console.log('Data to send:', dataToSend);
+        console.log('Json String:', JSON.stringify(dataToSend));
+
         fetch('http://localhost:3001/post-LR-Iter', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json'
             },
-            body: JSON.stringify(clickData)
+            body: JSON.stringify(dataToSend)
         })
         .then(response => response.json())
         .then(data => {
-            updateTableLine(data);
+            updateLinearRegressionParams(data);
         })
         .catch(error => {
             console.error('Error sending click data:', error);
