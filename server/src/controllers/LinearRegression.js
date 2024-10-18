@@ -1,3 +1,5 @@
+//FILE IS CURRENTLY DEPRECATED, MOVED THESE PROCESSES TO THE CLIENT SIDE
+
 //=======Initializes random starter line, for first iteration=======//
 const createRandomLine = (clickData) => {
     yValues = clickData.yValues
