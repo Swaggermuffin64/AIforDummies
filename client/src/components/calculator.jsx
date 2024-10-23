@@ -8,19 +8,17 @@ import useRegressionStep from '../hooks/useRegressionStep.jsx';
 const CalculatorComponent = () => {
     //=========Parent Element=========//
     const [regressionStarted, setRegressionStarted] = useState(false);
-    
+
     //=========Hooks=========//
     const {calculatorInstance, calculatorRef} = useCalculator();
     const {handleClick, clickData} = useCalculatorClick(calculatorInstance, calculatorRef, regressionStarted);
     const {linearRegressionIterationButton} = useRegressionStep(calculatorInstance, clickData, setRegressionStarted);
-
-
+    
 
     return (
-      <div id="calculator" className="calculator-container" onClick={handleClick}>
-        <button onClick={linearRegressionIterationButton}>Linear Regression Iteration</button>
-      </div>
-      
+        <div id="calculator" className="calculator-container" onClick={handleClick}>
+            <button onClick={linearRegressionIterationButton}>Linear Regression Iteration</button>
+        </div>
     );
 };
 
